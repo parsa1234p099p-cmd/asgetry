@@ -1,0 +1,619 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>آوای زریاب</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;600;700;800&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --navy:#071636;
+    --deep-blue:#0b2a5f;
+    --matte-gold:#c4a347;
+    --text:#e9f0ff;
+    --glass:rgba(255,255,255,0.04);
+    --glass-2:rgba(255,255,255,0.06);
+    --shadow:0 8px 30px rgba(2,6,23,0.5);
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0; font-family:"Vazirmatn","Tahoma",sans-serif; background:linear-gradient(180deg,var(--navy) 0%, #011026 100%); color:var(--text);
+    -webkit-font-smoothing:antialiased; line-height:1.65; user-select:none; padding-bottom:84px;
+  }
+  a{color:inherit}
+  .wrap{max-width:960px; margin:0 auto; padding:16px 16px 32px}
+  header{display:flex; gap:12px; align-items:center; padding:8px 0 14px}
+  .logo{width:56px; height:56px; border-radius:12px; overflow:hidden; box-shadow:0 6px 20px rgba(196,163,71,.15)}
+  .logo img{width:100%; height:100%; object-fit:cover}
+  h1{font-size:18px; margin:0}
+  .tagline{font-size:12px; opacity:.7}
+
+  /* تب‌های ناوبری بالا */
+  .tabs{
+    display:flex; gap:8px; overflow:auto; padding:6px 2px 10px; position:sticky; top:0; z-index:10;
+    background:linear-gradient(180deg, rgba(7,22,54,.96), rgba(7,22,54,.75));
+    backdrop-filter: blur(8px);
+    border-bottom:1px solid rgba(255,255,255,.05);
+  }
+  .tab{
+    padding:8px 12px; border-radius:999px; white-space:nowrap; font-size:13px; text-decoration:none;
+    border:1px solid rgba(196,163,71,.14);
+  }
+  .tab.active{background:linear-gradient(90deg,var(--matte-gold),rgba(255,255,255,.03)); color:#08121B; font-weight:800}
+
+  /* کارت/بخش‌ها */
+  section.view{display:none}
+  section.view.active{display:block}
+  .card{
+    background:linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.015));
+    border:1px solid rgba(255,255,255,0.03);
+    border-radius:14px; padding:14px; margin:12px 0; box-shadow:var(--shadow);
+  }
+  .title{color:var(--matte-gold); font-weight:800; text-shadow:0 6px 22px rgba(196,163,71,.2)}
+  .lead{opacity:.9}
+
+  /* شبکه کارت‌ها: برای جلوگیری از زیرهمی زشت :) */
+  .grid{display:grid; gap:12px}
+  .grid.cards-2{grid-template-columns:1fr}
+  @media(min-width:520px){ .grid.cards-2{grid-template-columns:1fr 1fr} }
+  @media(min-width:820px){ .grid.cards-3{grid-template-columns:1fr 1fr 1fr} }
+
+  /* خانه */
+  .video-placeholder{
+    height:200px; display:flex; align-items:center; justify-content:center; border-radius:12px; background:linear-gradient(90deg,rgba(10,20,50,.6),rgba(2,5,10,.6)); position:relative; overflow:hidden;
+  }
+  .btn{background:var(--matte-gold); color:#07121b; padding:10px 14px; border: radius 999px; border:none; font: weight 500px; width: 500px; height: 1500px;}
+  .note{position:absolute; bottom:8px; left:12px; font-size:12px; opacity:.65}
+
+  /* فهرست‌های متنی بلند */
+  ol{padding-inline-start:20px}
+  li{margin:10px 0}
+
+  /* اساتید: کارت + صفحه اختصاصی */
+  .teachers-grid{display:grid; grid-template-columns:1fr 1fr; gap:10px}
+  @media(min-width:560px){ .teachers-grid{grid-template-columns:repeat(3,1fr)} }
+  .teacher-card{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01)); border:1px solid rgba(255,255,255,0.04); border-radius:12px; overflow:hidden}
+  .teacher-card img{width:100%; height:140px; object-fit:cover; display:block}
+  .teacher-card .meta{padding:10px}
+  .chip{display:inline-block; padding:6px 10px; border-radius:999px; border:1px solid var(--matte-gold); color:var(--matte-gold); font-weight:700; font-size:12px; text-decoration:none}
+
+  /* صفحه استاد */
+  .backline{display:flex; justify-content:space-between; align-items:center; gap:10px}
+  .backbtn{font-size:13px; opacity:.9; text-decoration:none; border-bottom:1px dashed rgba(255,255,255,.3)}
+  .media-grid{display:grid; grid-template-columns:1fr 1fr; gap:10px}
+  @media(min-width:520px){ .media-grid{grid-template-columns:repeat(3,1fr)} }
+  .media-thumb{border-radius:10px; overflow:hidden; border:1px solid rgba(255,255,255,0.04); background:var(--glass)}
+  .media-thumb img, .media-thumb video{width:100%; height:140px; object-fit:cover; display:block; cursor:pointer}
+
+  /* مدال گالری */
+  .modal{position:fixed; inset:0; display:none; align-items:center; justify-content:center; background:rgba(0,0,0,.7); z-index:9999}
+  .modal.open{display:flex}
+  .modal .box{width:96%; max-width:520px; background:linear-gradient(180deg,rgba(9,20,40,.98),rgba(5,10,20,.98)); border:1px solid rgba(255,255,255,0.06); border-radius:12px; padding:10px}
+  .modal .box img,.modal .box video{width:100%; height:auto; border-radius:8px}
+  .modal .row{display:flex; justify-content:space-between; align-items:center; margin:6px 0 10px}
+  .iconbtn{background:transparent; border:1px solid rgba(255,255,255,0.1); color:var(--text); padding:6px 10px; border-radius:8px}
+
+  /* خرید PDF (خلاصه) */
+  .pdf-item{display:flex; gap:12px; align-items:flex-start}
+  .pdf-preview{width:36%; min-width:120px; border-radius:10px; overflow:hidden; border:1px solid rgba(255,255,255,.04); background:var(--glass)}
+  .pdf-preview img{width:100%; height:100%; display:block}
+  .price{color:var(--matte-gold); font-weight:800}
+  .muted{opacity:.7}
+
+  footer{
+    position:fixed; left:0; right:0; bottom:0; display:flex; gap:8px; justify-content:center; align-items:center; padding:10px 12px;
+    background:linear-gradient(90deg, rgba(2,10,30,.9), rgba(4,8,18,.9)); border-top:1px solid rgba(255,255,255,.04)
+  }
+  .cta{background:var(--matte-gold); color:#07121b; padding:10px 14px; border-radius:999px; font-weight:800; text-decoration:none}
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <!-- هدر -->
+    <header>
+      <div class="logo"><img src="media/logo.png" alt="لوگو آوای زریاب"></div>
+      <div>
+        <h1>آوای زریاب</h1>
+        <div class="tagline">آموزش و پژوهش گیتار کلاسیک — مدرسهٔ آوا</div>
+      </div>
+    </header>
+
+    <!-- تب‌های ناوبری -->
+    <nav class="tabs" id="tabs">
+      <a class="tab" data-view="home" href="#/home">خانه</a>
+      <a class="tab" data-view="golden" href="#/golden">۱۰ فرمان طلایی</a>
+    
+      <a class="tab" data-view="anxiety" href="#/anxiety">اضطراب اجرا</a>
+      <a class="tab" data-view="teachers" href="#/teachers">اساتید</a>
+      <a class="tab" data-view="students" href="#/students">آثار هنرجویان</a>
+      <a class="tab" data-view="pdfs" href="#/pdfs">سُلفژ (PDF)</a>
+      <a class="tab" data-view="history" href="#/history">تاریخچه</a>
+    </nav>
+
+    <!-- نماها -->
+    <!-- خانه -->
+    <section class="view" id="view-home">
+      <div class="card">
+        <h2 class="title">خوش آمدید به آوای زریاب</h2>
+        <p class="lead">مجموعه‌ای برای آموزش گیتار کلاسیک، پژوهش تاریخی و پرورش نوازندگان حرفه‌ای.</p>
+        <div class="video-placeholder">
+            <video class="btn" controls src="media/filmmoarefi.mp4"></video>
+          <div class="note"></div>
+        </div>
+      </div>
+
+      <div class="grid cards-2">
+        <div class="card">
+          <h3 class="title">مسیر یادگیری</h3>
+          <p>از ساز مناسب تا مدیریت اضطراب صحنه—همه چیز برای پیشرفت شما طراحی شده.</p>
+        </div>
+        <div class="card">
+          <h3 class="title">روح زریاب</h3>
+          <p>الهام از نوآوری‌های زریاب در تاریخ موسیقی و انتقال آن به آموزش امروز.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ۱۰ فرمان طلایی -->
+    <section class="view" id="view-golden">
+      <div class="card">
+        <h2 class="title">۱۰ فرمانِ طلایی در نوازندگیِ گیتار کلاسیک</h2>
+        <ol>
+          <li><strong>انتخاب ساز مناسب</strong> — اولین قدم داشتن سازی با کیفیت و صدای مناسب است. حتی مبتدیان هم باید سازی انتخاب کنند که صدای قابل قبول و دسته راحت داشته باشد. این موضوع هم انگیزه تمرین را بالا می‌برد و هم پیشرفت را سریع‌تر می‌کند. از خریدن سازهای متفرقه و دارای صدای بی‌کیفیت خودداری کنید.</li>
+          <li><strong>وضعیت بدنی و نشستن صحیح</strong> — وضعیت بدن تأثیر مستقیمی بر کیفیت نوازندگی دارد. نوازنده خوب کسی است که بدنش با ساز در تعادل باشد؛ رها بودن و بی‌انقباض نواختن یکی از اهداف هر نوازنده جدی است. استفاده از زیرپایی گیتار یا صندلی مناسب به شما کمک می‌کند تا از مشکلات عضلانی در آینده جلوگیری کنید.</li>
+          <li><strong>تمرین روزانه و منظم</strong> — در ژاپن روش کایزن (Kaizen) یا پیشرفت تدریجی… تمرین کوتاه اما روزانه (مثلاً ۳۰ دقیقه) از تمرین‌های پراکنده و طولانی مؤثرتر است.</li>
+          <li><strong>شناخت تئوری موسیقی</strong> — تئوری موسیقی پایۀ فهم قطعات است… یادگیری گام‌ها، ریتم‌ها و آکوردها.</li>
+          <li><strong>استفاده از منابع معتبر بین‌المللی</strong> — متد پارکنینگ، آکسفورد، آرون شیرر، و تکنیک «پامپینگ نایلون» اسکات تنانت؛ اتودهای کارکاسی، جولیانی، تارگا، لئو بروو، ویلالوبوس.</li>
+          <li><strong>تکنیک مناسب</strong> — اسلر، آرپژنوازی و ترمولو نیازمند تمرین روزانه و دقیق.</li>
+          <li><strong>گوش دادن به اجراهای بزرگان</strong> — سگوویا، دیوید راسل، جولین بریم، جان ویلیامز، پپه رومرو…</li>
+          <li><strong>ضبط و ارزیابی خود</strong> — ضبط تمرین‌ها برای شناسایی ضعف‌ها و روند پیشرفت.</li>
+          <li><strong>مدیریت اضطراب صحنه</strong> — ذهن‌آگاهی، اجرا در جمع دوستان، همراهی طبیعی با استرس.</li>
+          <li><strong>صبر و عشق به موسیقی</strong> — عجله نکنید؛ مسیر بلند ولی لذت‌بخش است.</li>
+        </ol>
+        <p class="muted">جمع‌بندی: انتخاب ساز، نشستن صحیح، تمرین روزانه، تئوری، گوش دادن، مدیریت استرس… با صبر و علاقه، هر روز این مسیر لذت‌بخش‌تر می‌شود.</p>
+      </div>
+    </section>
+
+    <!-- نکات حرفه‌ای -->
+    <section class="view" id="view-pro">
+      <div class="card">
+        <h2 class="title">۱۰ نکته برای تبدیل شدن به یک نوازنده گیتار کلاسیک حرفه‌ای</h2>
+        <p>تمام نکات ارسالی شما در این صفحه ادغام شده‌اند (بخش‌های ۱ تا ۱۰)؛ می‌توانی جزئیات تکمیلی هر مورد را در کارت‌های جداگانه اضافه کنی.</p>
+      </div>
+    </section>
+
+    <!-- اضطراب اجرا -->
+    <section class="view" id="view-anxiety">
+      <div class="card">
+        <h2 class="title">اضطراب اجرا (Performance Anxiety)</h2>
+        <p class="lead">یکی از طبیعی‌ترین حالت‌ها حتی در سطح حرفه‌ای—اما کاملاً قابل مدیریت با تمرین‌های درست.</p>
+        <hr style="border-color:rgba(255,255,255,.06)">
+        <h3>🎯 ۱) تغییر نگرش ذهنی</h3>
+        <ul>
+          <li>اضطراب دشمن نیست؛ انرژی هیجان است.</li>
+          <li>یادآوری: «من اینجا هستم تا موسیقی را با دیگران تقسیم کنم.»</li>
+          <li>بپرس: «چطور از لحظه لذت ببرم؟» نه «آیا خراب می‌کنم؟»</li>
+        </ul>
+        <h3>🧠 ۲) آماده‌سازی ذهنی (Mental Training)</h3>
+        <ul>
+          <li>تصویرسازی مثبتِ اجرای آرام و موفق.</li>
+          <li>گوش دادن به تمرین‌های موفق خودت.</li>
+          <li>تبدیل تپش قلب به نشانهٔ «هیجان» نه «ترس».</li>
+        </ul>
+        <h3>💪 ۳) کنترل بدن و تنفس</h3>
+        <ul>
+          <li>تنفس ۴-۷-۸ (سه نوبت).</li>
+          <li>ریلکسیشن عضلانیِ شانه/گردن/دست‌ها.</li>
+          <li>حالت بدنی باز و مطمئن.</li>
+        </ul>
+        <h3>🎸 ۴) آمادگی فنی واقعی</h3>
+        <ul>
+          <li>تمرین در شرایط مشابه اجرا.</li>
+          <li>پذیرش «نیمه‌کامل» و ادامه دادن پس از اشتباه.</li>
+          <li>روتین قبل از اجرا (۱۰ دقیقه تنفس، ۵ دقیقه مرور ذهنی، ۲ دقیقه جملهٔ آرام‌بخش).</li>
+        </ul>
+        <h3>💬 ۵) کار با ذهن پس از اشتباه</h3>
+        <ul>
+          <li>واکنش مهم‌تر از اشتباه است؛ قضاوت را به توصیف تبدیل کن.</li>
+          <li>ضبط و تحلیل اجراها برای ساختن اعتمادبه‌نفس.</li>
+        </ul>
+        <h3>🌿 ۶) تمرین‌های بلندمدت</h3>
+        <ul>
+          <li>مدیتیشن ۵–۱۰ دقیقه‌ای، یوگا/پیاده‌روی، خواب کافی، تغذیه سبک.</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- اساتید (کارت‌ها) -->
+    <section class="view" id="view-teachers">
+      <div class="card">
+        <h2 class="title">اساتید مجموعه آوای زریاب</h2>
+        <div class="teachers-grid">
+          <article class="teacher-card">
+            <img src="media/pic.jpg" alt="استاد معنوی">
+            <div class="meta">
+              <h3 style="margin:0 0 6px">استاد معنوی</h3>
+              <a class="chip" href="#/teacher/manavi">صفحهٔ اختصاصی</a>
+            </div>
+          </article>
+
+          <article class="teacher-card">
+            <img src="media/enayati.jpg" alt="استاد عنایتی">
+            <div class="meta">
+              <h3 style="margin:0 0 10px">استاد عنایتی</h3>
+              <a class="chip" href="#/teacher/enayati">صفحهٔ اختصاصی</a>
+            </div>
+          </article>
+
+          <article class="teacher-card">
+            <img src="media/ali.jpg" alt="استاد علی تلئیلی">
+            <div class="meta">
+              <h3 style="margin:0 0 6px">استاد علی تلئیلی</h3>
+              <a class="chip" href="#/teacher/ali-teleili">صفحهٔ اختصاصی</a>
+            </div>
+          </article>
+        </div>
+        <p class="muted" style="margin-top:10px">روی «صفحهٔ اختصاصی» هر استاد بزن تا گالری عکس و ویدئوها را ببینی.</p>
+      </div>
+    </section>
+
+    <!-- صفحهٔ اختصاصی هر استاد (در همان فایل) -->
+    <section class="view" id="view-teacher">
+      <div class="card">
+        <div class="backline">
+          <a class="backbtn" href="#/teachers">← بازگشت به اساتید</a>
+          <span class="muted" id="teacherSlug"></span>
+        </div>
+        <h2 class="title" id="teacherName">نام استاد</h2>
+        <div id="teacherBio" class="lead"></div>
+
+        <div class="card" style="margin-top:12px">
+          <h3 class="title">گالری عکس</h3>
+          <div class="media-grid" id="teacherPhotos"></div>
+        </div>
+
+        <div class="card" style="margin-top:12px">
+          <h3 class="title">ویدئوها</h3>
+          <div class="media-grid" id="teacherVideos"></div>
+          <p class="muted" style="margin-top:6px">آدرس هر ویدئو را می‌توانی با لینک فایل/آپارات/یوتیوب جایگزین کنی (یا فایل محلی ویدئو).</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- آثار هنرجویان -->
+    <section class="view" id="view-students">
+      <div class="card">
+        <h2 class="title">آثار هنرجویان</h2>
+        <div class="grid cards-2">
+          <div class="card">
+            <h3>نمونهٔ هنرجو ۱</h3>
+            <div class="media-thumb"><img src="assets/students/sample1.jpg" alt="اثر هنرجو ۱"></div>
+          </div>
+          <div class="card">
+            <h3>نمونهٔ هنرجو ۲</h3>
+            <div class="media-thumb"><img src="assets/students/sample2.jpg" alt="اثر هنرجو ۲"></div>
+          </div>
+        </div>
+        <p class="muted">برای هر هنرجو می‌توان صفحهٔ اختصاصی مشابه اساتید ساخت (همین روال).</p>
+      </div>
+    </section>
+
+    <!-- PDF / فروش -->
+    <section class="view" id="view-pdfs">
+      <div class="card">
+        <h2 class="title">سُلفژ (PDF)</h2>
+        <p class="muted">قیمت هر فایل: <span class="price">۵۰,۰۰۰ تومان</span>. بدون درگاه؛ واریز کارت به کارت و ارسال رسید در تلگرام.</p>
+
+        <div class="pdf-item" style="margin-top:12px">
+          <div class="pdf-preview">
+            <img src="media/nemone.png" alt="پیش‌نمایش سولفژ ۱" />
+          </div>
+          <div class="pdf-meta">
+            <h4 style="margin:0 0 6px">فایل سلفژ،</h4>
+            <div class="muted">نویسنده: مجموعهٔ آوای زریاب</div>
+            <div style="margin-top:8px">
+              <span class="price">۵۰,۰۰۰ تومان</span>
+              <a class="chip" href="#" onclick="openBuy()">خرید / ارسال رسید</a>
+            </div>
+            <p class="muted" style="margin-top:8px">فقط تصویر پیش‌نمایش نشان داده می‌شود؛ فایل کامل پس از تایید رسید در تلگرام ارسال می‌گردد.</p>
+            <p style="font-weight:800; color:var(--matte-gold); margin-top:8px">شماره کارت: <span id="cardNumber">REPLACE_WITH_CARD_NUMBER</span></p>
+            <p style="font-weight:800; color:var(--matte-gold);">تلگرام: <span id="tgId">@REPLACE_WITH_TELEGRAM_ID</span></p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- تاریخچه و تحلیل -->
+    <section class="view" id="view-history">
+      <div class="card">
+        <h2 class="title">🎸 تاریخچه و تحلیل ساز گیتار از ریشه‌های شرقی تا قلب موسیقی جهانی</h2>
+        <h3>📜 پیدایش تاریخی گیتار</h3>
+        <p>ساز گیتار… ریشه‌ای چند هزار ساله… در ایران، تنبور و بربط… انتقال به اندلس و اروپای قرون وسطی (لوت/ویه‌ویلا)… واژه guitarra از قیثاره عربی.</p>
+        <hr style="border-color:rgba(255,255,255,.06)">
+        <h3>🪕 نقش زریاب در تحول گیتار</h3>
+        <ul>
+          <li>افزودن سیم پنجم به عود (اثر در تکامل گیتار)</li>
+          <li>تأسیس مدرسهٔ موسیقی در قرطبه</li>
+          <li>انتقال سبک‌های شرقی و زمینه‌ساز فلامنکو</li>
+        </ul>
+        <p>زریاب فقط نوازنده نبود؛ نظریه‌پرداز فرهنگی و هویت‌ساز هنریِ اندلس بود.</p>
+        <hr style="border-color:rgba(255,255,255,.06)">
+        <h3>🎶 چرا گیتار مهم است؟</h3>
+        <ul>
+          <li>تنوع سبک‌ها (کلاسیک تا راک و…)</li>
+          <li>بیان فردی (ملودی + آکورد)</li>
+          <li>دسترسی و محبوبیت جهانی</li>
+          <li>نقش فرهنگی در فولکلور/مذهبی/اعتراضی/عاشقانه</li>
+        </ul>
+        <hr style="border-color:rgba(255,255,255,.06)">
+        <h3>🌟 بزرگان گیتار</h3>
+        <div class="grid cards-2">
+          <div class="card"><strong>آندرس سگوویا (کلاسیک)</strong><br>بنیان‌گذار گیتار کلاسیک مدرن؛ ارتقاء جایگاه گیتار.</div>
+          <div class="card"><strong>پاکو دلوسیا (فلامنکو)</strong><br>تلفیق فلامنکو با جز و کلاسیک؛ نوآوری در تکنیک.</div>
+          <div class="card"><strong>جیمی هندریکس (راک)</strong><br>انقلاب در صدای گیتار الکتریک؛ نماد خلاقیت.</div>
+          <div class="card"><strong>جان ویلیامز (کلاسیک)</strong><br>مفسر برجسته و گسترش رپرتوار.</div>
+          <div class="card"><strong>اریک کلپتون (بلوز/راک)</strong><br>تلفیق بلوز و راک؛ تاثیر فرهنگی.</div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- مدال گالری -->
+  <div class="modal" id="galleryModal" aria-hidden="true">
+    <div class="box">
+      <div class="row">
+        <button class="iconbtn" onclick="galleryPrev()">قبلی</button>
+        <button class="iconbtn" onclick="closeGallery()">بستن</button>
+        <button class="iconbtn" onclick="galleryNext()">بعدی</button>
+      </div>
+      <div id="galleryContent"></div>
+    </div>
+  </div>
+
+  <!-- مدال خرید/ارسال رسید (ساده) -->
+  <div class="modal" id="buyModal" aria-hidden="true">
+    <div class="box">
+      <div class="row">
+        <strong>نهایی‌سازی خرید</strong>
+        <button class="iconbtn" onclick="closeBuy()">بستن</button>
+      </div>
+      <p class="muted">قیمت: <span class="price">۵۰,۰۰۰ تومان</span></p>
+      <div class="muted">۱) مبلغ را به شماره کارت واریز کنید. ۲) فیش/رسید را در تلگرام به آیدی اعلام‌شده ارسال نمایید.</div>
+      <div class="row" style="margin-top:8px">
+        <div>
+          <div>شماره کارت: <strong id="cardNumber2">REPLACE_WITH_CARD_NUMBER</strong></div>
+          <div>تلگرام: <strong id="tgId2">@REPLACE_WITH_TELEGRAM_ID</strong></div>
+        </div>
+      </div>
+      <p class="muted" style="margin-top:8px">(در صورت نیاز می‌توانید در نسخهٔ سروری، آپلود رسید داخل همین فرم را اضافه کنید.)</p>
+    </div>
+  </div>
+
+  <footer>
+    <span class="muted" style="font-size:13px">آوای زریاب — طراحی موبایل‌محور • نئونی</span>
+    <a class="cta" href="#/pdfs">خرید فایل‌ها</a>
+  </footer>
+
+<script>
+  /* ====== داده‌ها ====== */
+  const TEACHERS = {
+    "manavi": {
+      name: "استاد معنوی",
+      bio: "معرفی کوتاه: مدرس ساز گیتار پاپ/کلاسیک و مربی با تجربه در اجرای صحنه‌ای و کلاس‌های تخصصی.",
+      photos: [
+        
+      ],
+      videos: [
+        // لینک ویدئو (mp4/لینک آپارات/یوتیوب با پوستر)
+        {type:"video", src:"media/film2.mp4", poster:"media/poster1.png"},
+        {type:"video", src:"media/film1.mp4", poster:"media/poster2.png"}
+      ]
+    },
+    "enayati": {
+      name: "استاد عنایتی",
+      bio: `
+      <strong>تحصیلات:</strong> دانش‌آموخته مترجمی زبان انگلیسی.<br><br>
+      <strong>تجربیات آموزشی:</strong>
+      <ul>
+        <li>فراگیری ویولن — استاد: خانم افسانه مزرعتی (۱۳۸۹)</li>
+        <li>مبانی خوانندگی و آواز پاپ — استاد: آقای سعید سیاحی (۱۳۹۷)</li>
+        <li>گیتار پاپ — استاد: آقای سهیل معنوی (۱۳۹۹)</li>
+        <li>پیانو — به صورت خودآموز</li>
+        <li>دیکته موسیقی — استاد: خانم فاطمه کاهه</li>
+        <li>کلاس‌های صداسازی — مدرسه آواز داوود محمدی (زیر نظر: استاد داوود محمدی، استاد معین قربانی، استاد مجتبی علیجان‌پور)</li>
+        <li>دوره‌های مربی‌گری صداسازی (مبتدی و پیشرفته) — استاد: آقای داوود محمدی و خانم هانیه کیان</li>
+        <li><em>دورهٔ ژانر جز و راک</em> — استاد: نیلوفر حقانی</li>
+        <li>شرکت در دوره‌ها و ورکشاپ‌های متعدد در حوزه‌های سلفژ، آواز، صداسازی و بهداشت حنجره</li>
+      </ul>
+      <strong>تجربیات کاری:</strong>
+      <ul>
+        <li>مربی صداسازی — مدرسه آواز داوود محمدی</li>
+        <li>مربی صداسازی و آواز — آموزشگاه موسیقی آوای زریاب کاشان</li>
+        <li>عضو فعال انجمن مطالعات آوازی ایران</li>
+      </ul>
+      <strong>همکاری‌های پژوهشی:</strong>
+      <ul>
+        <li>ترجمهٔ منابع معتبر انگلیسی در حوزهٔ صدا:
+          <ul>
+            <li><em>Anatomy of the Voice</em></li>
+            <li><em>Singing: The Mechanism and the Technique</em></li>
+          </ul>
+        </li>
+      </ul>
+      `,
+      photos: [
+        "assets/teachers/enayati/1.jpg",
+        "assets/teachers/enayati/2.jpg",
+        "assets/teachers/enayati/3.jpg",
+        "assets/teachers/enayati/4.jpg"
+      ],
+      videos: [
+        {type:"video", src:"assets/teachers/enayati/video1.mp4", poster:"assets/teachers/enayati/cover1.jpg"}
+      ]
+    },
+    "ali-teleili": {
+      name: "استاد علی تلئیلی",
+      bio: "معرفی کوتاه: نوازنده و مدرس با تمرکز بر تکنیک‌های مدرن گیتار و تربیت هنرجویان اجرا محور.",
+      photos: [
+        "assets/teachers/ali-teleili/1.jpg",
+        "assets/teachers/ali-teleili/2.jpg"
+      ],
+      videos: [
+        {type:"video", src:"assets/teachers/ali-teleili/video1.mp4", poster:"assets/teachers/ali-teleili/cover1.jpg"}
+      ]
+    }
+  };
+
+  /* ====== روتینگ ساده (SPA) ====== */
+  const views = {
+    home: document.getElementById('view-home'),
+    golden: document.getElementById('view-golden'),
+    pro: document.getElementById('view-pro'),
+    anxiety: document.getElementById('view-anxiety'),
+    teachers: document.getElementById('view-teachers'),
+    students: document.getElementById('view-students'),
+    pdfs: document.getElementById('view-pdfs'),
+    history: document.getElementById('view-history'),
+    teacher: document.getElementById('view-teacher')
+  };
+  const tabs = Array.from(document.querySelectorAll('.tab'));
+
+  function activateTab(name){
+    tabs.forEach(t=>t.classList.toggle('active', t.dataset.view===name));
+  }
+  function showView(name){
+    Object.entries(views).forEach(([k,el])=> el.classList.toggle('active', k===name));
+    activateTab(name);
+  }
+
+  function router(){
+    const hash = location.hash || '#/home';
+    // teacher route: #/teacher/:slug
+    if(hash.startsWith('#/teacher/')){
+      const slug = decodeURIComponent(hash.replace('#/teacher/',''));
+      renderTeacher(slug);
+      showView('teacher');
+      return;
+    }
+    const name = hash.replace('#/','');
+    if(views[name]) showView(name); else showView('home');
+  }
+  window.addEventListener('hashchange', router);
+  window.addEventListener('load', router);
+
+  /* ====== صفحهٔ استاد ====== */
+  const elTeacherName = document.getElementById('teacherName');
+  const elTeacherSlug = document.getElementById('teacherSlug');
+  const elTeacherBio  = document.getElementById('teacherBio');
+  const elTeacherPhotos = document.getElementById('teacherPhotos');
+  const elTeacherVideos = document.getElementById('teacherVideos');
+
+  function renderTeacher(slug){
+    const t = TEACHERS[slug];
+    elTeacherSlug.textContent = 'شناسه: ' + slug;
+    if(!t){
+      elTeacherName.textContent = 'استاد پیدا نشد';
+      elTeacherBio.innerHTML = '<p class="muted">داده‌ای برای این استاد ثبت نشده.</p>';
+      elTeacherPhotos.innerHTML = '';
+      elTeacherVideos.innerHTML = '';
+      return;
+    }
+    elTeacherName.textContent = t.name;
+    elTeacherBio.innerHTML = t.bio;
+
+    // Photos
+    elTeacherPhotos.innerHTML = '';
+    (t.photos||[]).forEach((src,i)=>{
+      const d = document.createElement('div');
+      d.className = 'media-thumb';
+      d.innerHTML = `<img src="${src}" alt="عکس ${t.name} - ${i+1}" onclick="openGallery('${slug}', 'photo', ${i})">`;
+      elTeacherPhotos.appendChild(d);
+    });
+
+    // Videos
+    elTeacherVideos.innerHTML = '';
+    (t.videos||[]).forEach((v,i)=>{
+      const d = document.createElement('div');
+      d.className = 'media-thumb';
+      // پوستر + پخش در مدال
+      const posterAttr = v.poster ? `poster="${v.poster}"` : '';
+      d.innerHTML = `<video ${posterAttr} onclick="openGallery('${slug}', 'video', ${i})"></video>`;
+      // برای نمایش پوستر به‌صورت تصویر ثابت داخل کارت:
+      if(v.poster){
+        d.innerHTML = `<img src="${v.poster}" alt="ویدئوی ${t.name} - ${i+1}" onclick="openGallery('${slug}', 'video', ${i})">`;
+      }
+      elTeacherVideos.appendChild(d);
+    });
+  }
+
+  /* ====== گالری مدال ====== */
+  const galleryModal = document.getElementById('galleryModal');
+  const galleryContent = document.getElementById('galleryContent');
+  let galleryState = { slug:null, type:'photo', index:0 };
+
+  function openGallery(slug, type, index){
+    galleryState = { slug, type, index };
+    renderGallery();
+    galleryModal.classList.add('open');
+    galleryModal.setAttribute('aria-hidden','false');
+  }
+  function closeGallery(){
+    galleryModal.classList.remove('open');
+    galleryModal.setAttribute('aria-hidden','true');
+    galleryContent.innerHTML = '';
+  }
+  function galleryPrev(){
+    const arr = galleryArray();
+    if(!arr.length) return;
+    galleryState.index = (galleryState.index - 1 + arr.length) % arr.length;
+    renderGallery();
+  }
+  function galleryNext(){
+    const arr = galleryArray();
+    if(!arr.length) return;
+    galleryState.index = (galleryState.index + 1) % arr.length;
+    renderGallery();
+  }
+  function galleryArray(){
+    const t = TEACHERS[galleryState.slug] || {};
+    return galleryState.type==='photo' ? (t.photos||[]) : (t.videos||[]);
+  }
+  function renderGallery(){
+    const t = TEACHERS[galleryState.slug]; if(!t) return;
+    const arr = galleryArray(); if(!arr.length) return;
+    const item = arr[galleryState.index];
+    if(galleryState.type==='photo'){
+      galleryContent.innerHTML = `<img src="${item}" alt="نمایش تصویر ${galleryState.index+1} از ${t.name}">`;
+    }else{
+      const v = item;
+      // اگر لینک یوتیوب/آپارات است می‌توان iframe هم قرار داد؛ اینجا فایل mp4/لینک مستقیم فرض شده
+      const posterAttr = v.poster ? `poster="${v.poster}"` : '';
+      galleryContent.innerHTML = `<video ${posterAttr} src="${v.src}" controls autoplay playsinline></video>`;
+    }
+  }
+  galleryModal.addEventListener('click', (e)=>{ if(e.target===galleryModal) closeGallery(); });
+
+  /* ====== خرید/رسید ====== */
+  const buyModal = document.getElementById('buyModal');
+  function openBuy(){
+    buyModal.classList.add('open'); buyModal.setAttribute('aria-hidden','false');
+  }
+  function closeBuy(){
+    buyModal.classList.remove('open'); buyModal.setAttribute('aria-hidden','true');
+  }
+
+  /* ====== کیفیت تجربه ====== */
+  // فعال‌سازی تب فعلی روی اسکرول به بالا ثابت است — handled by router()
+  // غیر فعال کردن راست‌کلیک روی تصاویر پیش‌نمایش
+  document.addEventListener('contextmenu', (e)=>{ if(e.target && e.target.tagName==='IMG') e.preventDefault(); });
+
+  // جایگزینی شماره کارت/آیدی تلگرام
+  document.getElementById('cardNumber').textContent = 'REPLACE_WITH_CARD_NUMBER';
+  document.getElementById('cardNumber2').textContent = 'REPLACE_WITH_CARD_NUMBER';
+  document.getElementById('tgId').textContent = '@REPLACE_WITH_TELEGRAM_ID';
+  document.getElementById('tgId2').textContent = '@REPLACE_WITH_TELEGRAM_ID';
+</script>
+</body>
+</html>
